@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — Zero fits_plug</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="brand">🔥 Zero fits_plug</div>
+    <nav>
+      <a href="/">Shop</a>
+      <a href="/cart.html">Cart <span id="cartCount">0</span></a>
+      <a href="#" id="logoutLink" style="display:none;">Logout</a>
+    </nav>
+  </div>
+
+  <div class="cart-container">
+    <h1 style="color:#fff;">Your Cart</h1>
+    <div id="cartItems"></div>
+
+    <div class="cart-summary" id="cartSummary" style="display:none;">
+      <div class="total">
+        <span>Total</span>
+        <span id="cartTotal">0 RWF</span>
+      </div>
+      <button class="btn" style="width:100%;" onclick="showCheckout()">Proceed to Pay</button>
+    </div>
+
+    <p id="emptyMsg" style="text-align:center;color:#888;margin-top:3rem;display:none;">
+      Your cart is empty.<br><a href="/" style="color:#f4a261;">Continue shopping →</a>
+    </p>
+
+    <!-- Checkout form -->
+    <div id="checkoutSection" style="display:none;background:#181818;padding:1.5rem;border-radius:10px;margin-top:2rem;">
+      <h2 style="color:#f4a261;margin-top:0;">Pay via Mobile Money</h2>
+
+      <div style="background:#0f0f0f;padding:1rem;border-radius:8px;border-left:4px solid #f4a261;margin-bottom:1.5rem;">
+        <p style="color:#b8b8b8;margin:0 0 0.5rem;">Send <strong style="color:#f4a261;font-size:1.2rem;" id="payAmount">0 RWF</strong> to:</p>
+        <p style="margin:0;"><strong style="color:#fff;font-size:1.3rem;" id="momoNumber">...</strong></p>
+        <p style="margin:0.25rem 0 0;color:#888;font-size:0.85rem;">Name: <span id="momoName">...</span></p>
+        <p style="margin:1rem 0 0;color:#b8b8b8;font-size:0.9rem;">
+          Dial <strong style="color:#f4a261;">*182#</strong> → Send Money → enter the number above → confirm with your PIN.
+          Then paste the <strong>transaction ID</strong> from the SMS below.
+        </p>
+      </div>
+
+      <div id="checkoutAlert"></div>
+
+      <form id="checkoutForm">
+        <div class="form-group">
+          <label for="customerName">Your Full Name</label>
+          <input type="text" id="customerName" required>
+        </div>
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="customerPhone">Your Phone Number</label>
+          <input type="tel" id="customerPhone" placeholder="078XXXXXXX" required>
+        </div>
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="network">Network</label>
+          <select id="network">
+            <option value="MTN">MTN MoMo</option>
+            <option value="Airtel">Airtel Money</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="transactionId">Transaction ID (from the SMS you received)</label>
+          <input type="text" id="transactionId" placeholder="e.g. MP240101.1234.A56789" required>
+        </div>
+
+        <button class="btn" type="submit" style="width:100%;margin-top:1.5rem;">Place Order</button>
+        <button type="button" class="btn btn-secondary" style="width:100%;margin-top:0.5rem;" onclick="hideCheckout()">Cancel</button>
+      </form>
+    </div>
+
+    <!-- Success message -->
+    <div id="successSection" style="display:none;background:#1a3a1f;border-left:4px solid #2e7d32;padding:1.5rem;border-radius:10px;margin-top:2rem;color:#b3ffb8;">
+      <h2 style="margin-top:0;">✅ Order placed!</h2>
+      <p>Your order <strong id="orderNumberDisplay"></strong> has been received.</p>
+      <p>We'll verify your payment and get back to you shortly. Check your phone for confirmation.</p>
+      <a href="/" class="btn" style="margin-top:1rem;display:inline-block;">Continue shopping</a>
+      <a id="whatsappMerchantBtn" href="#" target="_blank" class="btn" style="background:#25d366;color:white;margin-top:1rem;display:inline-block;">
+  💬 Contact us on WhatsApp
+</a>
+    </div>
+  </div>
+
+  <script>
+    var PAYMENT_INFO = { momoNumber: '', momoName: '' };
+
+    function getCart() {
+      try { return JSON.parse(localStorage.getItem('cart') || '[]'); }
+      catch (e) { return []; }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+      updateCount();
+    }
+
+    function updateCount() {
+      var cart = getCart();
+      var total = 0;
+      for (var i = 0; i < cart.length; i++) total += (cart[i].qty || 1);
+      var el = document.getElementById('cartCount');
+      if (el) el.textContent = total;
+    }
+
+    function getTotal() {
+      var cart = getCart();
+      var t = 0;
+      for (var i = 0; i < cart.length; i++) t += cart[i].price * cart[i].qty;
+      return t;
+    }
+
+    function renderCart() {
+      var cart = getCart();
+      var itemsEl = document.getElementById('cartItems');
+      var summaryEl = document.getElementById('cartSummary');
+      var emptyEl = document.getElementById('emptyMsg');
+
+      if (!cart.length) {
+        itemsEl.innerHTML = '';
+        summaryEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      summaryEl.style.display = 'block';
+
+      var html = '';
+      for (var i = 0; i < cart.length; i++) {
+        var item = cart[i];
+        var lineTotal = (item.price * item.qty);
+        html += '<div class="cart-item">' +
+          '<img src="' + (item.image || '/uploads/placeholder.jpg') + '" alt="' + item.name + '">' +
+          '<div class="details">' +
+            '<p class="name">' + item.name + '</p>' +
+            '<span class="price">' + item.price+ ' RWF each — ' + lineTotal + ' RWF</span>' +
+          '</div>' +
+          '<div class="qty-controls">' +
+            '<button onclick="changeQty(' + i + ', -1)">−</button>' +
+            '<span>' + item.qty + '</span>' +
+            '<button onclick="changeQty(' + i + ', 1)">+</button>' +
+          '</div>' +
+          '<button class="btn btn-danger btn-sm" onclick="removeItem(' + i + ')">Remove</button>' +
+        '</div>';
+      }
+      itemsEl.innerHTML = html;
+
+      document.getElementById('cartTotal').textContent = getTotal()+ ' RWF';
+    }
+
+    function changeQty(idx, delta) {
+      var cart = getCart();
+      cart[idx].qty += delta;
+      if (cart[idx].qty < 1) cart[idx].qty = 1;
+      saveCart(cart);
+    }
+
+    function removeItem(idx) {
+      var cart = getCart();
+      cart.splice(idx, 1);
+      saveCart(cart);
+    }
+
+    function showCheckout() {
+      document.getElementById('checkoutSection').style.display = 'block';
+      document.getElementById('successSection').style.display = 'none';
+      document.getElementById('payAmount').textContent = getTotal()+ ' RWF';
+      document.getElementById('checkoutSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function hideCheckout() {
+      document.getElementById('checkoutSection').style.display = 'none';
+    }
+
+    function showAlert(msg, type) {
+      var el = document.getElementById('checkoutAlert');
+      el.innerHTML = '<div class="alert alert-' + (type || 'error') + '">' + msg + '</div>';
+    }
+
+    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var cart = getCart();
+      if (!cart.length) return;
+
+      var customerName = document.getElementById('customerName').value.trim();
+      var customerPhone = document.getElementById('customerPhone').value.trim();
+      var network = document.getElementById('network').value;
+      var transactionId = document.getElementById('transactionId').value.trim();
+
+      if (!customerName || !customerPhone || !transactionId) {
+        showAlert('Please fill in all fields.');
+        return;
+      }
+
+      var orderData = {
+        customerName: customerName,
+        customerPhone: customerPhone,
+        network: network,
+        transactionId: transactionId,
+        items: cart,
+        total: getTotal()
+      };
+
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.success) {
+            localStorage.removeItem('cart');
+            document.getElementById('cartItems').innerHTML = '';
+            document.getElementById('cartSummary').style.display = 'none';
+            document.getElementById('checkoutSection').style.display = 'none';
+            document.getElementById('successSection').style.display = 'block';
+            document.getElementById('orderNumberDisplay').textContent = data.orderNumber;
+            var merchantNumber = '0735775795'; // ← REPLACE WITH YOUR REAL NUMBER
+var msg = 'Hi, I just placed order ' + data.orderNumber + '. My name is ' + customerName + '.';
+document.getElementById('whatsappMerchantBtn').href =
+  'https://wa.me/' + merchantNumber + '?text=' + encodeURIComponent(msg);
+            updateCount();
+          } else {
+            showAlert(data.message || 'Order failed.');
+          }
+        })
+        .catch(function (err) {
+          console.error(err);
+          showAlert('Server error. Try again.');
+        });
+    });
+
+    // Load payment info
+    fetch('/api/payment-info')
+      .then(function (res) { return res.json(); })
+      .then(function (info) {
+        PAYMENT_INFO = info;
+        document.getElementById('momoNumber').textContent = info.momoNumber;
+        document.getElementById('momoName').textContent = info.momoName;
+      });
+
+    // Navbar auth
+    var userToken = localStorage.getItem('userToken');
+    var logoutLink = document.getElementById('logoutLink');
+    if (userToken) logoutLink.style.display = 'inline';
+    logoutLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      localStorage.removeItem('userToken');
+      window.location.href = '/';
+    });
+
+    renderCart();
+    updateCount();
+  </script>
+</body>
+</html>

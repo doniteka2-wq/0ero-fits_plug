@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zero fitsplug— Fashion Storefront</title>
+  <script>
+    (function () {
+      var seenBefore = localStorage.getItem('visited');
+      var userToken = localStorage.getItem('userToken');
+      var adminToken = localStorage.getItem('adminToken');
+      if (!seenBefore && !userToken && !adminToken) {
+        localStorage.setItem('visited', 'true');
+        window.location.replace('/signup.html');
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="brand">🔥 Zero fits_plug</div>
+      <nav style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+  <a href="/">Shop</a>
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search products…"
+    style="padding:0.45rem 0.75rem;border-radius:8px;border:1px solid #333;background:#1e1e1e;color:#f0f0f0;font-size:0.9rem;min-width:180px;"
+  >
+  <select
+    id="categoryFilter"
+    style="padding:0.45rem 0.75rem;border-radius:8px;border:1px solid #333;background:#1e1e1e;color:#f0f0f0;font-size:0.9rem;cursor:pointer;"
+  >
+    <option value="">All categories</option>
+  </select>
+  <a href="/cart.html">Cart <span id="cartCount">0</span></a>
+  <a href="/customer-login.html" id="loginLink" style="display:none;">Login</a>
+  <a href="/signup.html" id="signupLink" style="display:none;">Sign Up</a>
+  <a href="#" id="logoutLink" style="display:none;">Logout</a>
+    </nav>
+  </div>
+
+  <header style="text-align:center;padding:3rem 1rem 1rem;">
+    <h1 style="margin:0 0 0.5rem;font-size:2.5rem;color:#ffffff;">Welcome to Zero fits_plug</h1>
+    <p style="color:#b8b8b8;margin:0;">Fresh drops. Bold looks. Made for you.</p>
+  </header>
+
+  <div id="alertBox" style="max-width:1200px;margin:1rem auto;padding:0 2rem;"></div>
+
+  <main>
+    <h2 style="text-align:center;margin-top:2rem;color:#ffffff;">Shop the Collection</h2>
+    <div class="products" id="productGrid"></div>
+    <p id="emptyMsg" style="text-align:center;color:#888;display:none;padding:2rem;">
+      No products yet — check back soon!
+    </p>
+  </main>
+
+  <footer style="text-align:center;padding:2rem 1rem;color:#777;font-size:0.85rem;border-top:1px solid #222;margin-top:3rem;">
+    © Fuego's Style — All rights reserved.
+  </footer>
+
+  <script>
+    // ---- Navbar auth state ----
+    var userToken = localStorage.getItem('userToken');
+    var loginLink = document.getElementById('loginLink');
+    var signupLink = document.getElementById('signupLink');
+    var logoutLink = document.getElementById('logoutLink');
+
+    if (userToken) {
+      logoutLink.style.display = 'inline';
+    } else {
+      loginLink.style.display = 'inline';
+      signupLink.style.display = 'inline';
+    }
+
+    logoutLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      localStorage.removeItem('userToken');
+      window.location.href = '/';
+    });
+
+    // ---- Cart helpers ----
+    function getCart() {
+      try {
+        return JSON.parse(localStorage.getItem('cart') || '[]');
+      } catch (err) {
+        return [];
+      }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+    }
+
+    function updateCartCount() {
+      var cart = getCart();
+      var total = 0;
+      for (var i = 0; i < cart.length; i++) {
+        total += (cart[i].qty || 1);
+      }
+      var el = document.getElementById('cartCount');
+      if (el) el.textContent = total;
+    }
+
+    function addToCart(item) {
+      var cart = getCart();
+      var found = false;
+      for (var i = 0; i < cart.length; i++) {
+        if (cart[i].productId === item.productId) {
+          cart[i].qty += 1;
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        cart.push(item);
+      }
+      saveCart(cart);
+
+      var alertBox = document.getElementById('alertBox');
+      alertBox.innerHTML = '<div class="alert alert-success">Added "' + item.name + '" to cart</div>';
+      setTimeout(function () { alertBox.innerHTML = ''; }, 2000);
+    }
+
+    updateCartCount();
+
+    // ---- Load products ----
+   // Store all products so filters can work without re-fetching
+var allProducts = [];
+
+function loadProducts() {
+  var grid = document.getElementById('productGrid');
+  var empty = document.getElementById('emptyMsg');
+
+  fetch('/api/products')
+    .then(function (res) { return res.json(); })
+    .then(function (products) {
+      allProducts = products;
+      populateCategories(products);
+      renderProducts(products);
+    })
+    .catch(function (err) {
+      console.error('Failed to load products:', err);
+      empty.textContent = 'Could not load products right now.';
+      empty.style.display = 'block';
+    });
+}
+
+function populateCategories(products) {
+  var select = document.getElementById('categoryFilter');
+  if (!select) return;
+
+  var categories = [];
+  for (var i = 0; i < products.length; i++) {
+    var cat = products[i].category || 'Uncategorized';
+    if (categories.indexOf(cat) === -1) categories.push(cat);
+  }
+  categories.sort();
+
+  var html = '<option value="">All categories</option>';
+  for (var j = 0; j < categories.length; j++) {
+    html += '<option value="' + categories[j] + '">' + categories[j] + '</option>';
+  }
+  select.innerHTML = html;
+}
+
+function renderProducts(products) {
+  var grid = document.getElementById('productGrid');
+  var empty = document.getElementById('emptyMsg');
+
+  if (!products.length) {
+    grid.innerHTML = '';
+    empty.textContent = allProducts.length
+      ? 'No products match your search.'
+      : 'No products yet — check back soon!';
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+
+  var html = '';
+  for (var i = 0; i < products.length; i++) {
+    var p = products[i];
+    html += '<div class="product-card">' +
+      '<img src="' + (p.image || '/uploads/placeholder.jpg') + '" alt="' + p.name + '">' +
+      '<div class="info">' +
+        '<span class="category">' + (p.category || 'Uncategorized') + '</span>' +
+        '<h3 class="name">' + p.name + '</h3>' +
+        '<span class="price">' + Number(p.price)+ ' RWF </span>' +
+        '<button class="btn btn-cart" ' +
+          'data-id="' + p.productId + '" ' +
+          'data-name="' + p.name + '" ' +
+          'data-price="' + p.price + '" ' +
+          'data-image="' + (p.image || '') + '">' +
+          'Add to Cart' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  }
+  grid.innerHTML = html;
+
+  var buttons = document.querySelectorAll('.btn-cart');
+  for (var j = 0; j < buttons.length; j++) {
+    buttons[j].addEventListener('click', function () {
+      addToCart({
+        productId: this.getAttribute('data-id'),
+        name: this.getAttribute('data-name'),
+        price: parseFloat(this.getAttribute('data-price')),
+        image: this.getAttribute('data-image'),
+        qty: 1
+      });
+    });
+  }
+}
+
+function applyFilters() {
+  var search = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  var category = document.getElementById('categoryFilter').value;
+
+  var filtered = allProducts.filter(function (p) {
+    var matchesSearch = !search ||
+      p.name.toLowerCase().indexOf(search) !== -1 ||
+      (p.category || '').toLowerCase().indexOf(search) !== -1 ||
+      (p.description || '').toLowerCase().indexOf(search) !== -1;
+
+    var matchesCategory = !category || (p.category || 'Uncategorized') === category;
+
+    return matchesSearch && matchesCategory;
+  });
+
+  renderProducts(filtered);
+}
+
+// Wire up inputs
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+
+// Load products on page load
+loadProducts();
+  </script>
+</body>
+</html>

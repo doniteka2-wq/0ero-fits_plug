@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Fuego's Style</title>
+  <script>
+    (function () {
+      if (!localStorage.getItem('adminToken')) {
+        window.location.replace('/admin-login.html');
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="brand">🔥 Fuego Admin</div>
+    <nav>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/admin-product.html">Products</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </div>
+
+  <div class="admin-container">
+    <div class="admin-header">
+      <h2>Administrative Workspace</h2>
+      <div>Access Token Profile: <strong style="color:#d62828;">Global Operator</strong></div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="label">Total Sales Portfolio</div>
+        <div class="value" id="metricSales">0 RWF</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Active Records</div>
+        <div class="value" id="metricUsers">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="label">Pending Checkouts</div>
+        <div class="value" id="metricPending">0</div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <h3 style="color:#ffffff;">Recent Orders</h3>
+    <table style="margin-bottom:2rem;">
+      <thead>
+        <tr>
+          <th>Order #</th>
+          <th>Customer</th>
+          <th>Phone</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTableBody">
+        <tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">Loading orders…</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Activities -->
+    <h3 style="color:#ffffff;">Live Transaction Activities History</h3>
+    <table style="margin-bottom:2rem;">
+      <thead>
+        <tr>
+          <th>Record ID</th>
+          <th>Customer Signature</th>
+          <th>Action Type</th>
+          <th>Process Status</th>
+        </tr>
+      </thead>
+      <tbody id="activityTableBody">
+        <tr><td colspan="4" style="text-align:center;color:#888;padding:2rem;">Loading activities…</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Users -->
+    <h3 style="color:#ffffff;">Database Registered User Index Registry</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Full Name</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="usersTableBody">
+        <tr><td colspan="5" style="text-align:center;color:#888;padding:2rem;">Loading users…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>

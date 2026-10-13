@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — zero fits_plug</title>
+  <script>
+    if (!localStorage.getItem('adminToken')) {
+      window.location.replace('/admin-login.html');
+    }
+  </script>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="brand">🔥 zero fits_plug</div>
+    <nav>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/admin-product.html">Products</a>
+      <a href="/admin-orders.html">Orders</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </div>
+
+  <div class="admin-container">
+    <div class="admin-header">
+      <h2>Customer Orders</h2>
+      <button class="btn btn-secondary btn-sm" onclick="loadOrders()">Refresh</button>
+    </div>
+
+    <div id="ordersList">
+      <p style="color:#888;text-align:center;padding:2rem;">Loading orders…</p>
+    </div>
+  </div>
+
+  <script>
+    var token = localStorage.getItem('adminToken');
+    var authHeaders = { 'Authorization': 'Bearer ' + token };
+
+    function loadOrders() {
+      fetch('/api/admin/orders', { headers: authHeaders })
+        .then(function (res) {
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin-login.html';
+            return null;
+          }
+          return res.json();
+        })
+        .then(function (orders) {
+          if (!orders) return;
+          renderOrders(orders);
+        })
+        .catch(function (err) {
+          console.error(err);
+          document.getElementById('ordersList').innerHTML =
+            '<p style="color:#c0392b;text-align:center;padding:2rem;">Failed to load orders.</p>';
+        });
+    }
+
+function renderOrders(orders) {
+  var el = document.getElementById('ordersList');
+
+  if (!orders.length) {
+    el.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">No orders yet.</p>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < orders.length; i++) {
+    var o = orders[i];
+    var statusColor = o.status === 'Paid'
+      ? '#2e7d32'
+      : (o.status === 'Cancelled' ? '#c0392b' : '#f4a261');
+
+    var itemsHtml = '';
+    for (var j = 0; j < o.items.length; j++) {
+      var it = o.items[j];
+      itemsHtml += '<li style="color:#e0e0e0;margin-bottom:0.25rem;">' +
+        it.name + ' <span style="color:#888;">× ' + it.qty + '</span> — ' +
+        (it.price * it.qty).toFixed(2) + ' RWF</li>';
+    }
+
+    var date = new Date(o.createdAt).toLocaleString();
+
+    // WhatsApp link — sanitize name for URL
+    var waName = encodeURIComponent(o.customerName);
+    var waNumber = o.customerPhone.replace(/[^0-9]/g, '').replace(/^0/, '250');
+    var waMessage = 'Hi ' + o.customerName + ', this is Fuego\'s Style. ';
+
+  if (o.status === 'Pending') {
+  waMessage += 'We received your order ' + o.orderNumber + ' and are verifying your payment. We\'ll confirm shortly. Thank you!';
+} else if (o.status === 'Paid') {
+  waMessage += 'Your order ' + o.orderNumber + ' is confirmed! We\'ll be in touch about delivery. Thank you for shopping with us 🔥';
+} else if (o.status === 'Cancelled') {
+  waMessage += 'Unfortunately we couldn\'t verify payment for order ' + o.orderNumber + '. Please reach out if this is a mistake.';
+}
+
+    var waLink = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(waMessage);
+
+    html += '<div style="background:#181818;padding:1.5rem;border-radius:10px;margin-bottom:1.25rem;border-left:4px solid ' + statusColor + ';">' +
+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">' +
+
+        '<div style="flex:1;min-width:260px;">' +
+          '<h3 style="margin:0 0 0.5rem;color:#f4a261;">' + o.orderNumber + '</h3>' +
+          '<p style="margin:0.25rem 0;color:#f0f0f0;"><strong>Name:</strong> ' + o.customerName + '</p>' +
+          '<p style="margin:0.25rem 0;color:#f0f0f0;"><strong>Phone:</strong> ' +
+            '<a href="tel:' + o.customerPhone + '" style="color:#f4a261;text-decoration:none;">' + o.customerPhone + '</a> ' +
+            '<span style="color:#888;">(' + o.network + ')</span></p>' +
+          '<p style="margin:0.25rem 0;color:#f0f0f0;"><strong>Transaction ID:</strong> ' +
+            '<span style="background:#0f0f0f;padding:0.2rem 0.5rem;border-radius:4px;font-family:monospace;color:#f4a261;">' + o.transactionId + '</span></p>' +
+          '<p style="margin:0.5rem 0 0.25rem;color:#b8b8b8;font-size:0.85rem;"><strong>Items:</strong></p>' +
+          '<ul style="margin:0;padding-left:1.25rem;">' + itemsHtml + '</ul>' +
+          '<p style="margin:0.5rem 0 0;color:#888;font-size:0.8rem;">Placed: ' + date + '</p>' +
+        '</div>' +
+
+        '<div style="text-align:right;min-width:200px;">' +
+          '<p style="color:#f4a261;font-weight:bold;font-size:1.4rem;margin:0 0 0.5rem;">' + Number(o.total).toFixed(2) + ' RWF</p>' +
+          '<p style="color:' + statusColor + ';font-weight:bold;margin:0 0 0.75rem;">' + o.status + '</p>' +
+          '<div style="display:flex;flex-direction:column;gap:0.5rem;">' +
+            '<button class="btn btn-sm" style="background:#2e7d32;" onclick="setStatus(\'' + o.orderNumber + '\', \'Paid\')">✓ Mark as Paid</button>' +
+            '<button class="btn btn-danger btn-sm" onclick="setStatus(\'' + o.orderNumber + '\', \'Cancelled\')">✗ Cancel</button>' +
+            '<a href="' + waLink + '" target="_blank" rel="noopener" class="btn btn-sm" style="background:#25d366;color:white;text-decoration:none;text-align:center;display:block;">💬 WhatsApp</a>' +
+          '</div>' +
+        '</div>' +
+
+      '</div>' +
+    '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+    function setStatus(orderNumber, status) {
+      if (!confirm('Mark ' + orderNumber + ' as ' + status + '?')) return;
+
+      fetch('/api/admin/orders/' + orderNumber, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ status: status })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.success) loadOrders();
+          else alert(data.message || 'Failed to update.');
+        })
+        .catch(function (err) {
+          console.error(err);
+          alert('Server error.');
+        });
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', function (e) {
+      e.preventDefault();
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin-login.html';
+    });
+
+    loadOrders();
+    // Auto-refresh every 30 seconds
+    setInterval(loadOrders, 30000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+node_modules/
+.env
+pay.env
+*.log
+.vscode/
+database_v24.backup.json
+
+# Uncomment the next line if you don't want upload images in the repo:
+# public/uploads/
+download (5).jpg
+download (6).jpg

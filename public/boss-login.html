@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Login — zero fits_plug</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <h2>🔥 Admin Access</h2>
+      <p style="text-align:center;color:#666;margin-top:0;">
+        Restricted area. Authorized staff only.
+      </p>
+
+      <div id="alertBox"></div>
+
+      <form id="adminForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="admin" required>
+        </div>
+
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+          <label style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;font-size:0.85rem;font-weight:normal;color:#666;cursor:pointer;">
+            <input type="checkbox" id="togglePassword" style="width:auto;margin:0;">
+            Show password
+          </label>
+        </div>
+
+        <button class="btn" type="submit">Sign In</button>
+      </form>
+
+      <p style="text-align:center;margin-top:1.5rem;">
+        <a href="customer-login.html" style="color:#666;font-size:0.85rem;">← Back to customer login</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Show password toggle
+      const toggle = document.getElementById('togglePassword');
+      const pwd = document.getElementById('password');
+      toggle.addEventListener('change', () => {
+        pwd.type = toggle.checked ? 'text' : 'password';
+      });
+
+      // Login
+      const form = document.getElementById('adminForm');
+      const alertBox = document.getElementById('alertBox');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.innerHTML = '';
+
+        const username = form.username.value.trim();
+        const password = form.password.value;
+
+        try {
+          const res = await fetch('/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.token) {
+            localStorage.setItem('adminToken', data.token);
+            alertBox.innerHTML = '<div class="alert alert-success">Access granted! Redirecting…</div>';
+            setTimeout(() => window.location.href = '/dashboard.html', 800);
+          } else {
+            alertBox.innerHTML = `<div class="alert alert-error">${data.message || 'Invalid credentials.'}</div>`;
+          }
+        } catch (err) {
+          alertBox.innerHTML = '<div class="alert alert-error">Server error. Try again.</div>';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

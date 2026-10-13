@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign Up —  Zero fits_plug</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <h2>Join Us Today</h2>
+      <p style="text-align:center;color:#666;margin-top:0;">
+        Create an account to start shopping.
+      </p>
+
+      <div id="alertBox"></div>
+
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="John Doe" required>
+        </div>
+
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+          <label style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;font-size:0.85rem;font-weight:normal;color:#666;cursor:pointer;">
+            <input type="checkbox" id="togglePassword" style="width:auto;margin:0;">
+            Show password
+          </label>
+        </div>
+
+        <button class="btn" type="submit" style="margin-top:1.25rem;">Create Account</button>
+      </form>
+
+      <p style="text-align:center;margin-top:1.5rem;">
+        Already have an account?
+        <a href="customer-login.html" style="color:#d62828;">Log In</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const toggle = document.getElementById('togglePassword');
+      const pwd = document.getElementById('password');
+      toggle.addEventListener('change', function () {
+        pwd.type = this.checked ? 'text' : 'password';
+      });
+
+      const form = document.getElementById('signupForm');
+      const alertBox = document.getElementById('alertBox');
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        alertBox.innerHTML = '';
+
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
+        const password = form.password.value;
+
+        try {
+          // 1. Register
+          const regRes = await fetch('/api/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+          });
+          const regData = await regRes.json();
+
+          if (!regRes.ok) {
+            alertBox.innerHTML = '<div class="alert alert-error">' + (regData.message || 'Signup failed.') + '</div>';
+            return;
+          }
+
+          // 2. Auto-login right after signup
+          const loginRes = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const loginData = await loginRes.json();
+
+          if (loginRes.ok && loginData.token) {
+            localStorage.setItem('userToken', loginData.token);
+            localStorage.setItem('visited', 'true');
+            alertBox.innerHTML = '<div class="alert alert-success">Welcome! Taking you to the shop…</div>';
+            setTimeout(function () { window.location.href = '/'; }, 1200);
+          } else {
+            alertBox.innerHTML = '<div class="alert alert-success">Account created! Please log in.</div>';
+            setTimeout(function () { window.location.href = '/customer-login.html'; }, 1200);
+          }
+        } catch (err) {
+          alertBox.innerHTML = '<div class="alert alert-error">Server error. Try again.</div>';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

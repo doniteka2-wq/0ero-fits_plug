@@ -1,0 +1,860 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "userId": "USR001",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "status": "Active"
+    },
+    {
+      "id": 2,
+      "userId": "USR002",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "status": "Active"
+    },
+    {
+      "id": 3,
+      "userId": "USR003",
+      "name": "Alex Fuego",
+      "email": "alex@fuego.com",
+      "status": "Active"
+    },
+    {
+      "id": 4,
+      "userId": "USR432",
+      "name": "john doe",
+      "email": "john@gmail.com",
+      "passwordHash": "$2a$10$QqsWhGOxlh7bWjarwhDBlO/fV5Y2EKs8DAmWkDbJBMsCmF1Y8J76a",
+      "status": "Active"
+    },
+    {
+      "id": 5,
+      "userId": "USR524",
+      "name": "flystr8",
+      "email": "fly@gmail.com",
+      "passwordHash": "$2a$10$pKtw8V1sQ8VkZOwu6KvgNeFX3UFgl87KP5/suexiWItDuTzNNNUci",
+      "status": "Active"
+    },
+    {
+      "id": 6,
+      "userId": "USR249",
+      "name": "jhn@gmail.com",
+      "email": "jhn@gmail.com",
+      "passwordHash": "$2a$10$E/z6k8GaGUv2iJTtFs3T7OKsvD1k8zy..V/FvZOQyYhjykYAsxcqS",
+      "status": "Active"
+    },
+    {
+      "id": 7,
+      "userId": "USR310",
+      "name": "hhhh",
+      "email": "gisa@gmail.com",
+      "passwordHash": "$2a$10$dxWsTq1tgrMBWt5tBET9ke.QjIcAPxk5zXeSIzRKjnutPXJBxi8hG",
+      "status": "Active"
+    },
+    {
+      "id": 8,
+      "userId": "USR853",
+      "name": "don",
+      "email": "doniteka2@gmail.com",
+      "passwordHash": "$2a$10$8t./M4ffh89e/qN6ynszrucF64.iQq4B5vUHePezmYTMtaj3x5JDa",
+      "status": "Active"
+    },
+    {
+      "id": 9,
+      "userId": "USR546",
+      "name": "hhhh",
+      "email": "hhhh@gmail.com",
+      "passwordHash": "$2a$10$JcE0TYX/jbay9oZJaGPsyOXKng6P.J0CSUdF5BkVY2bt26cyNRbKW",
+      "status": "Active"
+    },
+    {
+      "id": 10,
+      "userId": "USR827",
+      "name": "jjjjj",
+      "email": "jjjj@gmail.com",
+      "passwordHash": "$2a$10$mpN6g0sywoWXtgyqhRy8qe/Q11Vl7xzwtYrfItQTGbOwiIdqA9BXW",
+      "status": "Active"
+    },
+    {
+      "id": 11,
+      "userId": "USR335",
+      "name": "aaaaa",
+      "email": "aaaaa@gmail.com",
+      "passwordHash": "$2a$10$q4QDK7ee.qg/1aLu0gZqiuAMucNs1KCRx5o8T8i.wein2kAsOwUhO",
+      "status": "Active"
+    },
+    {
+      "id": 12,
+      "userId": "USR887",
+      "name": "kane",
+      "email": "kane@gmail.com",
+      "passwordHash": "$2a$10$P0fbdqkuuDuDRA1J2GN05uTszINcVm5GkcK3Cj3qzTfy7ZLpMCV2S",
+      "status": "Active"
+    },
+    {
+      "id": 13,
+      "userId": "USR760",
+      "name": "kane",
+      "email": "kane26@gmail.com",
+      "passwordHash": "$2a$10$nE2Whlmvg1tRl2nqN.oyC.AxUrjb97A.H/k9odzZME1vQJDvnNh.y",
+      "status": "Active"
+    },
+    {
+      "id": 14,
+      "userId": "USR756",
+      "name": "sdf",
+      "email": "kkk@gmail.com",
+      "passwordHash": "$2a$10$aUqcWrqoXsnUwPt3zH852eOLhrmnPcMUZ7JSXiIuTBiSnAiQTaT6m",
+      "status": "Active"
+    }
+  ],
+  "activities": [
+    {
+      "id": 44,
+      "activityId": "9879",
+      "userName": "Admin",
+      "action": "Uploaded product \"Bape \"",
+      "status": "Complete"
+    },
+    {
+      "id": 43,
+      "activityId": "4006",
+      "userName": "Admin",
+      "action": "Uploaded product \"supreme belt\"",
+      "status": "Complete"
+    },
+    {
+      "id": 42,
+      "activityId": "8187",
+      "userName": "Admin",
+      "action": "Uploaded product \"chrome hearts belt\"",
+      "status": "Complete"
+    },
+    {
+      "id": 41,
+      "activityId": "2484",
+      "userName": "shallon",
+      "action": "Placed order ORD-062331 (70000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 40,
+      "activityId": "9284",
+      "userName": "muhire",
+      "action": "Placed order ORD-793759 (52000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 39,
+      "activityId": "1678",
+      "userName": "sano",
+      "action": "Placed order ORD-356512 (92000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 38,
+      "activityId": "5541",
+      "userName": "Admin",
+      "action": "Uploaded product \"Timberlands\"",
+      "status": "Complete"
+    },
+    {
+      "id": 37,
+      "activityId": "3909",
+      "userName": "Admin",
+      "action": "Uploaded product \" Red puma speedcat\"",
+      "status": "Complete"
+    },
+    {
+      "id": 36,
+      "activityId": "1641",
+      "userName": "Admin",
+      "action": "Uploaded product \"crop shirt\"",
+      "status": "Complete"
+    },
+    {
+      "id": 35,
+      "activityId": "7452",
+      "userName": "beckham",
+      "action": "Placed order ORD-608834 (20000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 34,
+      "activityId": "8825",
+      "userName": "Don Iteka",
+      "action": "Placed order ORD-408021 (20000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 33,
+      "activityId": "1708",
+      "userName": "niganze dalius",
+      "action": "Placed order ORD-043216 (20000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 32,
+      "activityId": "3968",
+      "userName": "niganze dalius",
+      "action": "Placed order ORD-040878 (20000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 31,
+      "activityId": "8482",
+      "userName": "rama",
+      "action": "Placed order ORD-578704 (15000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 30,
+      "activityId": "3695",
+      "userName": "don",
+      "action": "Placed order ORD-013417 (40000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 29,
+      "activityId": "2365",
+      "userName": "don",
+      "action": "Placed order ORD-013411 (40000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 28,
+      "activityId": "7935",
+      "userName": "don",
+      "action": "Placed order ORD-013403 (40000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 27,
+      "activityId": "6434",
+      "userName": "don",
+      "action": "Placed order ORD-812399 (40000 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 26,
+      "activityId": "3764",
+      "userName": "Admin",
+      "action": "Uploaded product \"baggy \"",
+      "status": "Complete"
+    },
+    {
+      "id": 25,
+      "activityId": "1623",
+      "userName": "Admin",
+      "action": "Uploaded product \"chrome hearts Tee\"",
+      "status": "Complete"
+    },
+    {
+      "id": 24,
+      "activityId": "1600",
+      "userName": "Admin",
+      "action": "Deleted product \"baggy\"",
+      "status": "Complete"
+    },
+    {
+      "id": 23,
+      "activityId": "1664",
+      "userName": "Admin",
+      "action": "Deleted product \"chrome Tee\"",
+      "status": "Complete"
+    },
+    {
+      "id": 22,
+      "activityId": "2851",
+      "userName": "don",
+      "action": "Placed order ORD-243875 (30.00 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 21,
+      "activityId": "7231",
+      "userName": "fuego",
+      "action": "Placed order ORD-673256 (30.00 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 20,
+      "activityId": "4092",
+      "userName": "doniteka",
+      "action": "Placed order ORD-484880 (105.00 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 19,
+      "activityId": "5440",
+      "userName": "rama",
+      "action": "Placed order ORD-199464 (70.00 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 18,
+      "activityId": "5406",
+      "userName": "don",
+      "action": "Placed order ORD-574799 (60.00 RWF)",
+      "status": "Pending"
+    },
+    {
+      "id": 17,
+      "activityId": "8365",
+      "userName": "sdf",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 16,
+      "activityId": "7909",
+      "userName": "Admin",
+      "action": "Deleted product \"baggy\"",
+      "status": "Complete"
+    },
+    {
+      "id": 15,
+      "activityId": "8848",
+      "userName": "Admin",
+      "action": "Uploaded product \"baggy\"",
+      "status": "Complete"
+    },
+    {
+      "id": 14,
+      "activityId": "5071",
+      "userName": "Admin",
+      "action": "Uploaded product \"chrome Tee\"",
+      "status": "Complete"
+    },
+    {
+      "id": 13,
+      "activityId": "3294",
+      "userName": "Admin",
+      "action": "Uploaded product \"baggy\"",
+      "status": "Complete"
+    },
+    {
+      "id": 12,
+      "activityId": "3230",
+      "userName": "kane",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 11,
+      "activityId": "4928",
+      "userName": "kane",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 10,
+      "activityId": "1027",
+      "userName": "aaaaa",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 9,
+      "activityId": "6008",
+      "userName": "hhhh",
+      "action": "Reset account password",
+      "status": "Complete"
+    },
+    {
+      "id": 8,
+      "activityId": "3378",
+      "userName": "jjjjj",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 7,
+      "activityId": "5741",
+      "userName": "hhhh",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 6,
+      "activityId": "5890",
+      "userName": "don",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 5,
+      "activityId": "2440",
+      "userName": "hhhh",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 4,
+      "activityId": "8204",
+      "userName": "jhn@gmail.com",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 3,
+      "activityId": "3152",
+      "userName": "flystr8",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 2,
+      "activityId": "8487",
+      "userName": "john doe",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 1,
+      "activityId": "1024",
+      "userName": "John Doe",
+      "action": "Purchased Item A",
+      "status": "Complete"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "productId": "PRD461",
+      "name": "chrome hearts Tee",
+      "price": 15000,
+      "category": "T-shirt",
+      "description": "clean,classic",
+      "image": "/uploads/1791786876847-896602023.jpg"
+    },
+    {
+      "id": 2,
+      "productId": "PRD387",
+      "name": "baggy ",
+      "price": 20000,
+      "category": "pants",
+      "description": "street wear",
+      "image": "/uploads/1791787008090-352926990.jpg"
+    },
+    {
+      "id": 3,
+      "productId": "PRD540",
+      "name": "crop shirt",
+      "price": 15000,
+      "category": "Shirt",
+      "description": "classic",
+      "image": "/uploads/1791832876977-272669694.jpg"
+    },
+    {
+      "id": 4,
+      "productId": "PRD768",
+      "name": " Red puma speedcat",
+      "price": 37000,
+      "category": "Shoes",
+      "description": "comfortable",
+      "image": "/uploads/1791833073063-617485159.jpg"
+    },
+    {
+      "id": 5,
+      "productId": "PRD468",
+      "name": "Timberlands",
+      "price": 55000,
+      "category": "Shoes",
+      "description": "street ",
+      "image": "/uploads/1791833297907-476524184.jpg"
+    },
+    {
+      "id": 6,
+      "productId": "PRD414",
+      "name": "chrome hearts belt",
+      "price": 12000,
+      "category": "Belts",
+      "description": "gentil",
+      "image": "/uploads/1791910417775-852439603.jpg"
+    },
+    {
+      "id": 7,
+      "productId": "PRD688",
+      "name": "supreme belt",
+      "price": 11000,
+      "category": "Belts",
+      "description": "street wear",
+      "image": "/uploads/1791910489934-936569390.jpg"
+    },
+    {
+      "id": 8,
+      "productId": "PRD767",
+      "name": "Bape ",
+      "price": 21000,
+      "category": "Bag",
+      "description": "clean",
+      "image": "/uploads/1791910548439-255112732.jpg"
+    }
+  ],
+  "orders": [
+    {
+      "id": 17,
+      "orderNumber": "ORD-062331",
+      "customerName": "shallon",
+      "customerPhone": "0788989909",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.72",
+      "items": [
+        {
+          "productId": "PRD461",
+          "name": "chrome hearts Tee",
+          "price": 15000,
+          "image": "/uploads/1791786876847-896602023.jpg",
+          "qty": 1
+        },
+        {
+          "productId": "PRD468",
+          "name": "Timberlands",
+          "price": 55000,
+          "image": "/uploads/1791833297907-476524184.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 70000,
+      "status": "Paid",
+      "createdAt": "2026-10-13T05:57:42.355Z"
+    },
+    {
+      "id": 16,
+      "orderNumber": "ORD-793759",
+      "customerName": "muhire",
+      "customerPhone": "0795768674",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.73",
+      "items": [
+        {
+          "productId": "PRD540",
+          "name": "crop shirt",
+          "price": 15000,
+          "image": "/uploads/1791832876977-272669694.jpg",
+          "qty": 1
+        },
+        {
+          "productId": "PRD768",
+          "name": " Red puma speedcat",
+          "price": 37000,
+          "image": "/uploads/1791833073063-617485159.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 52000,
+      "status": "Paid",
+      "createdAt": "2026-10-13T05:36:33.776Z"
+    },
+    {
+      "id": 15,
+      "orderNumber": "ORD-356512",
+      "customerName": "sano",
+      "customerPhone": "0795768673",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.03",
+      "items": [
+        {
+          "productId": "PRD768",
+          "name": " Red puma speedcat",
+          "price": 37000,
+          "image": "/uploads/1791833073063-617485159.jpg",
+          "qty": 1
+        },
+        {
+          "productId": "PRD468",
+          "name": "Timberlands",
+          "price": 55000,
+          "image": "/uploads/1791833297907-476524184.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 92000,
+      "status": "Paid",
+      "createdAt": "2026-10-12T19:29:16.512Z"
+    },
+    {
+      "id": 14,
+      "orderNumber": "ORD-608834",
+      "customerName": "beckham",
+      "customerPhone": "0788989908",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.77",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 20000,
+      "status": "Cancelled",
+      "createdAt": "2026-10-12T19:16:48.834Z"
+    },
+    {
+      "id": 13,
+      "orderNumber": "ORD-408021",
+      "customerName": "Don Iteka",
+      "customerPhone": "0783250020",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.77",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 20000,
+      "status": "Pending",
+      "createdAt": "2026-10-12T19:13:28.028Z"
+    },
+    {
+      "id": 12,
+      "orderNumber": "ORD-043216",
+      "customerName": "niganze dalius",
+      "customerPhone": "0796666377",
+      "network": "MTN",
+      "transactionId": "Mp2577879800.9989",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 20000,
+      "status": "Pending",
+      "createdAt": "2026-10-12T19:07:23.217Z"
+    },
+    {
+      "id": 11,
+      "orderNumber": "ORD-040878",
+      "customerName": "niganze dalius",
+      "customerPhone": "0796666377",
+      "network": "MTN",
+      "transactionId": "Mp2577879800.9989",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 20000,
+      "status": "Pending",
+      "createdAt": "2026-10-12T19:07:20.884Z"
+    },
+    {
+      "id": 10,
+      "orderNumber": "ORD-578704",
+      "customerName": "rama",
+      "customerPhone": "0783456783",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.77",
+      "items": [
+        {
+          "productId": "PRD461",
+          "name": "chrome hearts Tee",
+          "price": 15000,
+          "image": "/uploads/1791786876847-896602023.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 15000,
+      "status": "Paid",
+      "createdAt": "2026-10-12T15:56:18.721Z"
+    },
+    {
+      "id": 9,
+      "orderNumber": "ORD-013417",
+      "customerName": "don",
+      "customerPhone": "0783250020",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.03",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 2
+        }
+      ],
+      "total": 40000,
+      "status": "Paid",
+      "createdAt": "2026-10-12T11:53:33.418Z"
+    },
+    {
+      "id": 8,
+      "orderNumber": "ORD-013411",
+      "customerName": "don",
+      "customerPhone": "0783250020",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.03",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 2
+        }
+      ],
+      "total": 40000,
+      "status": "Cancelled",
+      "createdAt": "2026-10-12T11:53:33.411Z"
+    },
+    {
+      "id": 7,
+      "orderNumber": "ORD-013403",
+      "customerName": "don",
+      "customerPhone": "0783250020",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.03",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 2
+        }
+      ],
+      "total": 40000,
+      "status": "Pending",
+      "createdAt": "2026-10-12T11:53:33.403Z"
+    },
+    {
+      "id": 6,
+      "orderNumber": "ORD-812399",
+      "customerName": "don",
+      "customerPhone": "0783250020",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.03",
+      "items": [
+        {
+          "productId": "PRD387",
+          "name": "baggy ",
+          "price": 20000,
+          "image": "/uploads/1791787008090-352926990.jpg",
+          "qty": 2
+        }
+      ],
+      "total": 40000,
+      "status": "Pending",
+      "createdAt": "2026-10-12T11:50:12.399Z"
+    },
+    {
+      "id": 5,
+      "orderNumber": "ORD-243875",
+      "customerName": "don",
+      "customerPhone": "0786786553",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.00",
+      "items": [
+        {
+          "productId": "PRD426",
+          "name": "chrome Tee",
+          "price": 30,
+          "image": "/uploads/1791663424688-170526232.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 30,
+      "status": "Pending",
+      "createdAt": "2026-10-12T06:07:23.883Z"
+    },
+    {
+      "id": 4,
+      "orderNumber": "ORD-673256",
+      "customerName": "fuego",
+      "customerPhone": "0795768673",
+      "network": "MTN",
+      "transactionId": "Mp200000000.7889.00",
+      "items": [
+        {
+          "productId": "PRD426",
+          "name": "chrome Tee",
+          "price": 30,
+          "image": "/uploads/1791663424688-170526232.jpg",
+          "qty": 1
+        }
+      ],
+      "total": 30,
+      "status": "Pending",
+      "createdAt": "2026-10-12T04:01:13.256Z"
+    },
+    {
+      "id": 3,
+      "orderNumber": "ORD-484880",
+      "customerName": "doniteka",
+      "customerPhone": "0786786553",
+      "network": "MTN",
+      "transactionId": "mp111435465768gbn",
+      "items": [
+        {
+          "productId": "PRD489",
+          "name": "baggy",
+          "price": 35,
+          "image": "/uploads/1791663732979-674851121.jpg",
+          "qty": 3
+        }
+      ],
+      "total": 105,
+      "status": "Pending",
+      "createdAt": "2026-10-12T03:58:04.880Z"
+    },
+    {
+      "id": 2,
+      "orderNumber": "ORD-199464",
+      "customerName": "rama",
+      "customerPhone": "0783250020",
+      "network": "MTN",
+      "transactionId": "mp132435465768gbn",
+      "items": [
+        {
+          "productId": "PRD489",
+          "name": "baggy",
+          "price": 35,
+          "image": "/uploads/1791663732979-674851121.jpg",
+          "qty": 2
+        }
+      ],
+      "total": 70,
+      "status": "Pending",
+      "createdAt": "2026-10-12T03:53:19.469Z"
+    },
+    {
+      "id": 1,
+      "orderNumber": "ORD-574799",
+      "customerName": "don",
+      "customerPhone": "0788989908",
+      "network": "MTN",
+      "transactionId": "mp132435465768gbn",
+      "items": [
+        {
+          "productId": "PRD426",
+          "name": "chrome Tee",
+          "price": 30,
+          "image": "/uploads/1791663424688-170526232.jpg",
+          "qty": 2
+        }
+      ],
+      "total": 60,
+      "status": "Pending",
+      "createdAt": "2026-10-11T20:46:14.808Z"
+    }
+  ]
+}

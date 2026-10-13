@@ -1,0 +1,16 @@
+{
+  "name": "fuegos-style-standalone",
+  "version": "1.0.0",
+  "description": "Fuego's Style fashion storefront with user profiles and an integrated administration panel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.4.0"
+  }
+}

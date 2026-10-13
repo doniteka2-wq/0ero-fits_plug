@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer Login —  Zero fits_plug</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <h2>Welcome Back</h2>
+      <p style="text-align:center;color:#666;margin-top:0;">
+        Log in to your  Zero fits_plug account.
+      </p>
+
+      <div id="alertBox"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="john@example.com" required>
+        </div>
+
+        <div class="form-group" style="margin-top:1rem;">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+          <label style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;font-size:0.85rem;font-weight:normal;color:#666;cursor:pointer;">
+            <input type="checkbox" id="togglePassword" style="width:auto;margin:0;">
+            Show password
+          </label>
+        </div>
+
+        <p style="text-align:right;margin-top:0.5rem;font-size:0.85rem;">
+          <a href="public-forgot-paswrd.html" style="color:#666;">Forgot password?</a>
+        </p>
+
+        <button class="btn" type="submit">Log In</button>
+      </form>
+
+      <p style="text-align:center;margin-top:1.5rem;">
+        Don't have an account?
+        <a href="signup.html" style="color:#d62828;">Sign Up</a>
+      </p>
+     
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle = document.getElementById('togglePassword');
+      const pwd = document.getElementById('password');
+      toggle.addEventListener('change', () => {
+        pwd.type = toggle.checked ? 'text' : 'password';
+      });
+
+      const form = document.getElementById('loginForm');
+      const alertBox = document.getElementById('alertBox');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.innerHTML = '';
+
+        const email = form.email.value.trim();
+        const password = form.password.value;
+
+        try {
+          const res = await fetch('/api/users/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+
+          if (res.ok && data.token) {
+            localStorage.setItem('userToken', data.token);
+            alertBox.innerHTML = '<div class="alert alert-success">Login successful! Redirecting…</div>';
+            setTimeout(() => { window.location.href = '/'; }, 1500);
+          } else {
+            alertBox.innerHTML = '<div class="alert alert-error">' + (data.message || 'Invalid credentials.') + '</div>';
+          }
+        } catch (err) {
+          alertBox.innerHTML = '<div class="alert alert-error">Server error. Try again.</div>';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
