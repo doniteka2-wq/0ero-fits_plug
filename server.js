@@ -83,7 +83,7 @@ async function sendEmail({ to, subject, html }) {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 // ---------- User register ----------
-app.post('/api/users/register', async (req, res) => {
+app.post('/api/orders', verifyCustomerToken, async (req, res) => {
     try {
         const { name, email, password } = req.body;
         if (!name || !email || !password) return res.status(400).json({ message: 'All fields are required.' });

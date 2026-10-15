@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  (function () {
+    if (!localStorage.getItem('userToken')) {
+      localStorage.setItem('returnTo', '/cart.html');
+      window.location.replace('/signup.html');
+    }
+  })();
+</script>
   <title>Cart — Zero fits_plug</title>
   <link rel="stylesheet" href="/style.css">
 </head>
@@ -207,11 +215,14 @@
         total: getTotal()
       };
 
-      fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-      })
+    fetch('/api/orders', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + (localStorage.getItem('userToken') || '')
+  },
+  body: JSON.stringify(orderData)
+})
         .then(function (res) { return res.json(); })
         .then(function (data) {
           if (data.success) {

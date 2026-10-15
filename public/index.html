@@ -79,7 +79,17 @@
       localStorage.removeItem('userToken');
       window.location.href = '/';
     });
-
+function requireLogin() {
+  var token = localStorage.getItem('userToken');
+  if (!token) {
+    // Save where they were so we can return after login
+    localStorage.setItem('returnTo', window.location.pathname);
+    alert('Please create an account or log in to start shopping.');
+    window.location.href = '/signup.html';
+    return false;
+  }
+  return true;
+}
     // ---- Cart helpers ----
     function getCart() {
       try {
@@ -103,26 +113,33 @@
       var el = document.getElementById('cartCount');
       if (el) el.textContent = total;
     }
+function addToCart(item) {
+  // ---- Login check ----
+  if (!localStorage.getItem('userToken')) {
+    alert('Please create an account or log in to add items to your cart.');
+    localStorage.setItem('returnTo', '/');
+    window.location.href = '/signup.html';
+    return;
+  }
 
-    function addToCart(item) {
-      var cart = getCart();
-      var found = false;
-      for (var i = 0; i < cart.length; i++) {
-        if (cart[i].productId === item.productId) {
-          cart[i].qty += 1;
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        cart.push(item);
-      }
-      saveCart(cart);
-
-      var alertBox = document.getElementById('alertBox');
-      alertBox.innerHTML = '<div class="alert alert-success">Added "' + item.name + '" to cart</div>';
-      setTimeout(function () { alertBox.innerHTML = ''; }, 2000);
+  var cart = getCart();
+  var found = false;
+  for (var i = 0; i < cart.length; i++) {
+    if (cart[i].productId === item.productId) {
+      cart[i].qty += 1;
+      found = true;
+      break;
     }
+  }
+  if (!found) {
+    cart.push(item);
+  }
+  saveCart(cart);
+
+  var alertBox = document.getElementById('alertBox');
+  alertBox.innerHTML = '<div class="alert alert-success">Added "' + item.name + '" to cart</div>';
+  setTimeout(function () { alertBox.innerHTML = ''; }, 2000);
+}
 
     updateCartCount();
 
