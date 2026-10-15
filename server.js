@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
@@ -6,10 +7,6 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
-const MOMO_NUMBER = process.env.MOMO_NUMBER || '0795828020';
-const MOMO_NAME = process.env.MOMO_NAME || "Muhizi Michel";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'doniteka2gmail.com@gmail.com';
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -17,29 +14,32 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = 'super-secure-admin-secret-key-xyz';
+const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-env';
 const DB_FILE = path.join(__dirname, 'database_v24.json');
 const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 
+const MOMO_NUMBER = process.env.MOMO_NUMBER || '0795828020';
+const MOMO_NAME = process.env.MOMO_NAME || "Muhizi Michel";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com';
+
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
-// ---------- DB helpers ----------
+// ---------- Database helpers ----------
 function getDb() {
     try {
         if (!fs.existsSync(DB_FILE)) {
-            const initialData = { users: [], activities: [], products: [] };
-            fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
-            return initialData;
+            const initial = { users: [], activities: [], products: [], orders: [] };
+            fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2));
+            return initial;
         }
-        const raw = fs.readFileSync(DB_FILE, 'utf8');
-        const parsed = JSON.parse(raw);
+        const parsed = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
         parsed.users = parsed.users || [];
         parsed.activities = parsed.activities || [];
         parsed.products = parsed.products || [];
         parsed.orders = parsed.orders || [];
         return parsed;
     } catch (err) {
-        console.error('❌ database_v24.json is corrupted:', err.message);
+        console.error('❌ Database corrupted:', err.message);
         process.exit(1);
     }
 }
@@ -48,7 +48,7 @@ function saveDb(data) {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// ---------- Multer config ----------
+// ---------- Multer (image uploads) ----------
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, UPLOAD_DIR),
     filename: (req, file, cb) => {
@@ -66,33 +66,63 @@ const upload = multer({
     }
 });
 
-// ---------- Admin credentials ----------
-// After first run, replace this hash with the output of:
-//   node -e "console.log(require('bcryptjs').hashSync('admin1234', 10))"
-const ADMIN_CREDENTIALS = {
-    username: 'admin',
-    password: 'admin1234'
-};
-// ---------- Email helper (stub — replace with real Nodemailer later) ----------
+// ---------- Email helper (stub — swap for real Nodemailer later) ----------
 async function sendEmail({ to, subject, html }) {
     console.log('📧 [Email stub] To:', to, '| Subject:', subject);
     return true;
 }
 
+// ---------- Admin credentials ----------
+const ADMIN_CREDENTIALS = {
+    username: 'admin',
+    passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2a$10$REPLACE_WITH_YOUR_HASH'
+};
+
+// ---------- Auth middleware ----------
+const verifyAdminToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Unauthorized session.' });
+
+    try {
+        req.user = jwt.verify(token, JWT_SECRET);
+        next();
+    } catch (err) {
+        return res.status(403).json({ message: 'Session timed out or invalid.' });
+    }
+};
+
+const verifyCustomerToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Please log in to place an order.' });
+
+    try {
+        req.user = jwt.verify(token, JWT_SECRET);
+        next();
+    } catch (err) {
+        return res.status(403).json({ message: 'Session expired. Please log in again.' });
+    }
+};
+
 // ---------- Root ----------
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-// ---------- User register ----------
-app.post('/api/orders', verifyCustomerToken, async (req, res) => {
+// ---------- User: register ----------
+app.post('/api/users/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
-        if (!name || !email || !password) return res.status(400).json({ message: 'All fields are required.' });
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'All fields are required.' });
+        }
 
         const db = getDb();
-        if (db.users.some(u => u.email === email)) return res.status(400).json({ message: 'Email already registered.' });
+        if (db.users.some(u => u.email === email)) {
+            return res.status(400).json({ message: 'Email already registered.' });
+        }
 
         const nextId = db.users.length ? Math.max(...db.users.map(u => u.id)) + 1 : 1;
-        const generatedId = "USR" + Math.floor(100 + Math.random() * 900);
+        const generatedId = 'USR' + Math.floor(100 + Math.random() * 900);
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -102,7 +132,7 @@ app.post('/api/orders', verifyCustomerToken, async (req, res) => {
             name,
             email,
             passwordHash: hashedPassword,
-            status: "Active"
+            status: 'Active'
         });
 
         const nextActId = db.activities.length ? Math.max(...db.activities.map(a => a.id)) + 1 : 1;
@@ -110,12 +140,18 @@ app.post('/api/orders', verifyCustomerToken, async (req, res) => {
             id: nextActId,
             activityId: Math.floor(1000 + Math.random() * 9000).toString(),
             userName: name,
-            action: "Registered a new account",
-            status: "Complete"
+            action: 'Registered a new account',
+            status: 'Complete'
         });
 
         saveDb(db);
-        const form = document.getElementById('productForm');
+
+        sendEmail({
+            to: email,
+            subject: "Welcome to Fuego's Style",
+            html: '<p>Hi ' + name + ', welcome to Fuego\'s Style!</p>'
+        });
+
         res.status(201).json({ success: true, message: 'Account configured successfully.' });
     } catch (err) {
         console.error(err);
@@ -123,13 +159,15 @@ app.post('/api/orders', verifyCustomerToken, async (req, res) => {
     }
 });
 
-// ---------- User login ----------
+// ---------- User: login ----------
 app.post('/api/users/login', async (req, res) => {
     const { email, password } = req.body;
     const db = getDb();
     const user = db.users.find(u => u.email === email);
 
-    if (!user || !user.passwordHash) return res.status(401).json({ message: 'Invalid credentials.' });
+    if (!user || !user.passwordHash) {
+        return res.status(401).json({ message: 'Invalid credentials.' });
+    }
 
     const match = await bcrypt.compare(password, user.passwordHash);
     if (!match) return res.status(401).json({ message: 'Invalid credentials.' });
@@ -137,6 +175,8 @@ app.post('/api/users/login', async (req, res) => {
     const token = jwt.sign({ id: user.userId, role: 'customer' }, JWT_SECRET, { expiresIn: '6h' });
     res.json({ success: true, token });
 });
+
+// ---------- User: reset password ----------
 app.post('/api/users/reset-password', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -167,151 +207,74 @@ app.post('/api/users/reset-password', async (req, res) => {
     }
 });
 
-// ---------- Admin auth middleware ----------
-const verifyAdminToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.status(401).json({ message: 'Unauthorized session.' });
-
-    try {
-        req.user = jwt.verify(token, JWT_SECRET);
-        next();
-    } catch (err) {
-        return res.status(403).json({ message: 'Session timed out or invalid.' });
-    }
-};
-const verifyCustomerToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.status(401).json({ message: 'Please log in to place an order.' });
-
-    try {
-        req.user = jwt.verify(token, JWT_SECRET);
-        next();
-    } catch (err) {
-        return res.status(403).json({ message: 'Session expired. Please log in again.' });
-    }
-};
-// ---------- Admin login ----------
+// ---------- Admin: login ----------
 app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
-
-    console.log('--- Admin login attempt ---');
-    console.log('username received:', JSON.stringify(username));
-    console.log('password length received:', password ? password.length : 0);
-    console.log('expected username:', JSON.stringify(ADMIN_CREDENTIALS.username));
 
     if (username !== ADMIN_CREDENTIALS.username) {
         return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-   const isPasswordValid = password === ADMIN_CREDENTIALS.password;
-    console.log('password matches stored hash:', isPasswordValid);
-
-    if (!isPasswordValid) {
-        return res.status(401).json({ message: 'Invalid credentials' });
-    }
+    const valid = await bcrypt.compare(password, ADMIN_CREDENTIALS.passwordHash);
+    if (!valid) return res.status(401).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '2h' });
     res.json({ success: true, token });
 });
 
-// ---------- Admin metrics ----------
+// ---------- Admin: metrics ----------
 app.get('/api/admin/metrics', verifyAdminToken, (req, res) => {
     const db = getDb();
-    res.json({ totalSales: 12450, activeUsers: db.users.length, pendingOrders: 18 });
+    const paidOrders = db.orders.filter(o => o.status === 'Paid');
+    const revenue = paidOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+
+    res.json({
+        totalSales: revenue,
+        activeUsers: db.users.length,
+        pendingOrders: db.orders.filter(o => o.status === 'Pending').length,
+        totalOrders: db.orders.length
+    });
 });
 
-// ---------- Admin activities ----------
+// ---------- Admin: activities ----------
 app.get('/api/admin/activities', verifyAdminToken, (req, res) => {
     const db = getDb();
     res.json(db.activities.slice(0, 10));
 });
 
-// ---------- Admin users ----------
+// ---------- Admin: users ----------
 app.get('/api/admin/users', verifyAdminToken, (req, res) => {
     const db = getDb();
     res.json(db.users.map(({ passwordHash, ...rest }) => rest));
 });
 
-// ---------- Admin delete user ----------
 app.delete('/api/admin/users/:id', verifyAdminToken, (req, res) => {
     const db = getDb();
-    const targetId = req.params.id;
-    const initialLength = db.users.length;
-    db.users = db.users.filter(u => u.userId !== targetId);
+    const before = db.users.length;
+    db.users = db.users.filter(u => u.userId !== req.params.id);
 
-    if (db.users.length < initialLength) {
+    if (db.users.length < before) {
         saveDb(db);
-        return res.json({ success: true, message: 'User permanently deleted.' });
+        return res.json({ success: true, message: 'User deleted.' });
     }
     res.status(404).json({ message: 'User not found.' });
 });
 
-// ---------- Public products ----------
+// ---------- Products: public list ----------
 app.get('/api/products', (req, res) => {
     const db = getDb();
     res.json(db.products || []);
 });
 
-// ---------- Admin upload product ----------
-app.post('/api/admin-products', verifyAdminToken, upload.single('image'), (req, res) => {
-    try {
-        const { name, price, category, description } = req.body;
-        if (!name || !price) return res.status(400).json({ message: 'Name and price are required.' });
-
-        const db = getDb();
-
-        const nextId = db.products.length ? Math.max(...db.products.map(p => p.id)) + 1 : 1;
-        const generatedId = "PRD" + Math.floor(100 + Math.random() * 900);
-        const imagePath = req.file ? '/uploads/' + req.file.filename : null;
-
-        const product = {
-            id: nextId,
-            productId: generatedId,
-            name,
-            price: parseFloat(price),
-            category: category || 'Uncategorized',
-            description: description || '',
-            image: imagePath
-        };
-
-        db.products.push(product);
-
-        const nextActId = db.activities.length ? Math.max(...db.activities.map(a => a.id)) + 1 : 1;
-        db.activities.unshift({
-            id: nextActId,
-            activityId: Math.floor(1000 + Math.random() * 9000).toString(),
-            userName: 'Admin',
-            action: 'Uploaded product "' + name + '"',
-            status: 'Complete'
-        });
-
-        saveDb(db);
-        res.status(201).json({ success: true, product });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Failed to upload product.' });
-    }
-});
-
-// ---------- Admin delete product ----------
-// ---------- Public products list ----------
-app.get('/api/products', (req, res) => {
-    const db = getDb();
-    res.json(db.products || []);
-});
-
-// ---------- Admin: upload product ----------
+// ---------- Products: admin upload ----------
 app.post('/api/admin/products', verifyAdminToken, upload.single('image'), (req, res) => {
     try {
         const { name, price, category, description } = req.body;
         if (!name || !price) return res.status(400).json({ message: 'Name and price are required.' });
 
         const db = getDb();
-
         const nextId = db.products.length ? Math.max(...db.products.map(p => p.id)) + 1 : 1;
-        const generatedId = "PRD" + Math.floor(100 + Math.random() * 900);
+        const generatedId = 'PRD' + Math.floor(100 + Math.random() * 900);
         const imagePath = req.file ? '/uploads/' + req.file.filename : null;
 
         const product = {
@@ -339,86 +302,14 @@ app.post('/api/admin/products', verifyAdminToken, upload.single('image'), (req, 
         res.status(201).json({ success: true, product });
     } catch (err) {
         console.error('UPLOAD ERROR:', err);
-        res.status(500).json({ message: 'Failed to upload product.', error: err.message });
-    }
-});
-app.delete('/api/admin/products/:id', verifyAdminToken, (req, res) => {
-    const db = getDb();
-
-    const product = db.products.find(p => p.productId === req.params.id || String(p.id) === req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found.' });
-
-    if (product.image) {
-        const filePath = path.join(__dirname, 'public', product.image);
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    }
-
-    db.products = db.products.filter(p => p.productId !== product.productId);
-
-    const nextActId = db.activities.length ? Math.max(...db.activities.map(a => a.id)) + 1 : 1;
-    db.activities.unshift({
-        id: nextActId,
-        activityId: Math.floor(1000 + Math.random() * 9000).toString(),
-        userName: 'Admin',
-        action: 'Deleted product "' + product.name + '"',
-        status: 'Complete'
-    });
-
-    saveDb(db);
-    res.json({ success: true, message: 'Product deleted.' });
-});
-// ---------- Public products ----------
-app.get('/api/products', (req, res) => {
-    const db = getDb();
-    res.json(db.products || []);
-});
-
-// ---------- Admin: upload product ----------
-app.post('/api/admin-product', verifyAdminToken, upload.single('image'), (req, res) => {
-    try {
-        const { name, price, category, description } = req.body;
-        if (!name || !price) return res.status(400).json({ message: 'Name and price are required.' });
-
-        const db = getDb();
-
-        const nextId = db.products.length ? Math.max(...db.products.map(p => p.id)) + 1 : 1;
-        const generatedId = "PRD" + Math.floor(100 + Math.random() * 900);
-        const imagePath = req.file ? '/uploads/' + req.file.filename : null;
-
-        const product = {
-            id: nextId,
-            productId: generatedId,
-            name,
-            price: parseFloat(price),
-            category: category || 'Uncategorized',
-            description: description || '',
-            image: imagePath
-        };
-
-        db.products.push(product);
-
-        const nextActId = db.activities.length ? Math.max(...db.activities.map(a => a.id)) + 1 : 1;
-        db.activities.unshift({
-            id: nextActId,
-            activityId: Math.floor(1000 + Math.random() * 9000).toString(),
-            userName: 'Admin',
-            action: 'Uploaded product "' + name + '"',
-            status: 'Complete'
-        });
-
-        saveDb(db);
-        res.status(201).json({ success: true, product });
-    } catch (err) {
-        console.error(err);
         res.status(500).json({ message: 'Failed to upload product.' });
     }
 });
 
-// ---------- Admin: delete product ----------
+// ---------- Products: admin delete ----------
 app.delete('/api/admin/products/:id', verifyAdminToken, (req, res) => {
     const db = getDb();
-
-    const product = db.products.find(p => p.productId === req.params.id || String(p.id) === req.params.id);
+    const product = db.products.find(p => p.productId === req.params.id);
     if (!product) return res.status(404).json({ message: 'Product not found.' });
 
     if (product.image) {
@@ -440,13 +331,14 @@ app.delete('/api/admin/products/:id', verifyAdminToken, (req, res) => {
     saveDb(db);
     res.json({ success: true, message: 'Product deleted.' });
 });
-// ---------- Public: get payment info ----------
+
+// ---------- Payment info ----------
 app.get('/api/payment-info', (req, res) => {
     res.json({ momoNumber: MOMO_NUMBER, momoName: MOMO_NAME });
 });
 
-// ---------- Place an order (customer) ----------
-app.post('/api/orders', async (req, res) => {
+// ---------- Orders: place order ----------
+app.post('/api/orders', verifyCustomerToken, async (req, res) => {
     try {
         const { customerName, customerPhone, network, transactionId, items, total } = req.body;
 
@@ -463,12 +355,12 @@ app.post('/api/orders', async (req, res) => {
 
         const order = {
             id: nextId,
-            orderNumber: orderNumber,
-            customerName: customerName,
-            customerPhone: customerPhone,
+            orderNumber,
+            customerName,
+            customerPhone,
             network: network || 'Unknown',
-            transactionId: transactionId,
-            items: items,
+            transactionId,
+            items,
             total: parseFloat(total),
             status: 'Pending',
             createdAt: new Date().toISOString()
@@ -476,56 +368,46 @@ app.post('/api/orders', async (req, res) => {
 
         db.orders.unshift(order);
 
-        // Log activity
         const nextActId = db.activities.length ? Math.max(...db.activities.map(a => a.id)) + 1 : 1;
         db.activities.unshift({
             id: nextActId,
             activityId: Math.floor(1000 + Math.random() * 9000).toString(),
             userName: customerName,
-            action: 'Placed order ' + orderNumber + ' (' + Number(total) + ' RWF)',
+            action: 'Placed order ' + orderNumber + ' (' + Number(total).toFixed(2) + ' RWF)',
             status: 'Pending'
         });
 
         saveDb(db);
 
-        // Notify admin by email (fails silently if email not set up)
         const itemsList = items.map(function (i) {
-            return '<li>' + i.name + ' × ' + i.qty + ' — ' + (i.price * i.qty)+ ' RWF</li>';
+            return '<li>' + i.name + ' x ' + i.qty + ' - ' + (i.price * i.qty).toFixed(2) + ' RWF</li>';
         }).join('');
 
         sendEmail({
             to: ADMIN_EMAIL,
-            subject: '🛒 New order ' + orderNumber + ' from ' + customerName,
-            html: `
-                <div style="font-family:Arial;max-width:600px;margin:auto;padding:2rem;background:#111;color:#f0f0f0;border-radius:10px;">
-                    <h2 style="color:#f4a261;">New order received</h2>
-                    <p><strong>Order:</strong> ${orderNumber}</p>
-                    <p><strong>Customer:</strong> ${customerName}</p>
-                    <p><strong>Phone:</strong> ${customerPhone} (${network})</p>
-                    <p><strong>Transaction ID:</strong> ${transactionId}</p>
-                    <hr style="border-color:#333;">
-                    <p><strong>Items:</strong></p>
-                    <ul>${itemsList}</ul>
-                    <p style="font-size:1.2rem;color:#f4a261;"><strong>Total:</strong> ${Number(total)} RWF</p>
-                    <p style="color:#888;font-size:0.85rem;">Verify this transaction in your MoMo app before marking as paid.</p>
-                </div>
-            `
+            subject: 'New order ' + orderNumber + ' from ' + customerName,
+            html: '<h2>New order ' + orderNumber + '</h2>' +
+                  '<p><strong>Customer:</strong> ' + customerName + '</p>' +
+                  '<p><strong>Phone:</strong> ' + customerPhone + ' (' + network + ')</p>' +
+                  '<p><strong>Transaction ID:</strong> ' + transactionId + '</p>' +
+                  '<ul>' + itemsList + '</ul>' +
+                  '<p><strong>Total:</strong> ' + Number(total).toFixed(2) + ' RWF</p>'
         });
 
-        res.status(201).json({ success: true, orderNumber: orderNumber });
+        res.status(201).json({ success: true, orderNumber });
     } catch (err) {
         console.error('ORDER ERROR:', err);
         res.status(500).json({ message: 'Failed to place order.' });
     }
 });
 
-// ---------- Admin: view all orders ----------
+// ---------- Orders: admin list ----------
 app.get('/api/admin/orders', verifyAdminToken, (req, res) => {
     const db = getDb();
     res.json(db.orders || []);
 });
 
-// ---------- Admin: update order status ----------
+// ---------- Orders: admin update status ----------
 app.put('/api/admin/orders/:orderNumber', verifyAdminToken, (req, res) => {
     const db = getDb();
     const order = db.orders.find(o => o.orderNumber === req.params.orderNumber);
@@ -536,9 +418,10 @@ app.put('/api/admin/orders/:orderNumber', verifyAdminToken, (req, res) => {
 
     order.status = status;
     saveDb(db);
-    res.json({ success: true, order: order });
+    res.json({ success: true, order });
 });
-// ---------- Start ----------
-app.listen(PORT, '0.0.0.0', () => console.log(...));
+
+// ---------- Start the server ----------
+app.listen(PORT, '0.0.0.0', () => {
     console.log("🚀 SUCCESS! Fuego's Style engine operational at http://localhost:" + PORT);
-})
+});
