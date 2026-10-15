@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const JWT_SECRET = 'super-secure-admin-secret-key-xyz';
 const DB_FILE = path.join(__dirname, 'database_v24.json');
 const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
@@ -180,7 +180,18 @@ const verifyAdminToken = (req, res, next) => {
         return res.status(403).json({ message: 'Session timed out or invalid.' });
     }
 };
+const verifyCustomerToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Please log in to place an order.' });
 
+    try {
+        req.user = jwt.verify(token, JWT_SECRET);
+        next();
+    } catch (err) {
+        return res.status(403).json({ message: 'Session expired. Please log in again.' });
+    }
+};
 // ---------- Admin login ----------
 app.post('/api/admin/login', async (req, res) => {
     const { username, password } = req.body;
@@ -528,6 +539,6 @@ app.put('/api/admin/orders/:orderNumber', verifyAdminToken, (req, res) => {
     res.json({ success: true, order: order });
 });
 // ---------- Start ----------
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => console.log(...));
     console.log("🚀 SUCCESS! Fuego's Style engine operational at http://localhost:" + PORT);
 })
