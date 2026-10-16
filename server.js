@@ -75,7 +75,7 @@ async function sendEmail({ to, subject, html }) {
 // ---------- Admin credentials ----------
 const ADMIN_CREDENTIALS = {
     username: 'admin',
-    passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2a$10$REPLACE_WITH_YOUR_HASH'
+    passwordHash: process.env.ADMIN_PASSWORD_HASH || '$2a$10$lx6fsAeKUJBGgErqsiXsu.pvDkI8TARxWisr6A5mIs.dYtYRjsIzeH'
 };
 
 // ---------- Auth middleware ----------
