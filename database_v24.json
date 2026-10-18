@@ -54,19 +54,11 @@
       "status": "Active"
     },
     {
-      "id": 8,
-      "userId": "USR853",
-      "name": "don",
-      "email": "doniteka2@gmail.com",
-      "passwordHash": "$2a$10$8t./M4ffh89e/qN6ynszrucF64.iQq4B5vUHePezmYTMtaj3x5JDa",
-      "status": "Active"
-    },
-    {
       "id": 9,
       "userId": "USR546",
       "name": "hhhh",
       "email": "hhhh@gmail.com",
-      "passwordHash": "$2a$10$JcE0TYX/jbay9oZJaGPsyOXKng6P.J0CSUdF5BkVY2bt26cyNRbKW",
+      "passwordHash": "$2a$10$vwTgN.u6ZLq3zVuiCfN.f.j5jdYUcvACTUYA/V9hdTqQZOl0Iuivm",
       "status": "Active"
     },
     {
@@ -108,9 +100,31 @@
       "email": "kkk@gmail.com",
       "passwordHash": "$2a$10$aUqcWrqoXsnUwPt3zH852eOLhrmnPcMUZ7JSXiIuTBiSnAiQTaT6m",
       "status": "Active"
+    },
+    {
+      "id": 15,
+      "userId": "USR302",
+      "name": "fuego",
+      "email": "doniteka2@gmail.com",
+      "passwordHash": "$2a$10$f8xT7hpsxvkAboh45iRNDuEVGtaOLBgyuF0oEXjH0Vs4jy7XApZNa",
+      "status": "Active"
     }
   ],
   "activities": [
+    {
+      "id": 46,
+      "activityId": "8904",
+      "userName": "fuego",
+      "action": "Registered a new account",
+      "status": "Complete"
+    },
+    {
+      "id": 45,
+      "activityId": "7977",
+      "userName": "hhhh",
+      "action": "Reset account password",
+      "status": "Complete"
+    },
     {
       "id": 44,
       "activityId": "9879",

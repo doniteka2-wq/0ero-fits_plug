@@ -6,8 +6,7 @@ const bcrypt = require('bcryptjs');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-
-const app = express();
+const Mailjet = require('node-mailjet');                onst app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +20,7 @@ const UPLOAD_DIR = path.join(__dirname, 'public', 'uploads');
 const MOMO_NUMBER = process.env.MOMO_NUMBER || '0795828020';
 const MOMO_NAME = process.env.MOMO_NAME || "Muhizi Michel";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com';
+
 
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -146,11 +146,23 @@ app.post('/api/users/register', async (req, res) => {
 
         saveDb(db);
 
-        sendEmail({
-            to: email,
-            subject: "Welcome to Fuego's Style",
-            html: '<p>Hi ' + name + ', welcome to Fuego\'s Style!</p>'
-        });
+      sendEmail({
+    to: email,
+    subject: "Welcome to Fuego's Style 🔥",
+    html: `
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;background:#111;color:#f0f0f0;padding:2rem;border-radius:10px;">
+            <h1 style="color:#f4a261;">🔥 Welcome, ${name}!</h1>
+            <p>Your Fuego's Style account is ready. Start shopping our latest drops.</p>
+            <p style="margin:2rem 0;">
+                <a href="${process.env.BASE_URL || 'http://localhost:3000'}/"
+                   style="background:#d62828;color:white;padding:0.75rem 1.5rem;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">
+                   Shop Now
+                </a>
+            </p>
+            <p style="color:#888;font-size:0.85rem;">You're receiving this because you created an account with us.</p>
+        </div>
+    `
+});
 
         res.status(201).json({ success: true, message: 'Account configured successfully.' });
     } catch (err) {
