@@ -490,3 +490,18 @@ table td[colspan] { padding: 2rem 1rem; color: #777; }
   .navbar input#searchInput { min-width: 100%; }
   .navbar select#categoryFilter { width: 100%; }
 }
+/* ---------- Product Image Sizing ---------- */
+.product-card img {
+  width: 100%;
+  height: 260px;          /* Keeps the image box a nice, consistent size */
+  object-fit: cover;      /* Fills the box without stretching the image */
+  object-position: center; /* Centers the image if it crops slightly */
+  background: #0f0f0f;    /* Matches your dark theme if the image is transparent */
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Optional: Slight zoom effect when hovering over the product */
+.product-card:hover img {
+  transform: scale(1.05);
+}
