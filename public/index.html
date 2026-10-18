@@ -18,6 +18,10 @@
   </script>
   <link rel="stylesheet" href="/style.css">
 </head>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <img src="/logo.jpg" alt="Loading..." class="loading-logo">
+  </div>
 <body>
   <div class="navbar">
     <div class="brand">🔥 Zero fits_plug</div>
@@ -259,5 +263,15 @@ document.getElementById('categoryFilter').addEventListener('change', applyFilter
 // Load products on page load
 loadProducts();
   </script>
+  <script>
+  // Hide loading screen when the page fully loads
+  window.addEventListener('load', function() {
+    const loader = document.getElementById('loading-screen');
+    // Wait a tiny bit (e.g., 500 milliseconds) so the user actually sees the logo
+    setTimeout(() => {
+      loader.classList.add('hidden');
+    }, 500); 
+  });
+</script>
 </body>
 </html>
