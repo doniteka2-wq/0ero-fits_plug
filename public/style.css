@@ -490,36 +490,3 @@ table td[colspan] { padding: 2rem 1rem; color: #777; }
   .navbar input#searchInput { min-width: 100%; }
   .navbar select#categoryFilter { width: 100%; }
 }
-/* ---------- Loading Screen ---------- */
-#loading-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #0f0f0f; /* Matches your dark theme */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; /* Makes sure it sits on top of everything */
-  transition: opacity 0.5s ease-out; /* Smooth fade-out effect */
-}
-
-.loading-logo {
-  width: 150px; /* Adjust size as needed */
-  height: auto;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-/* A cool breathing/pulsing effect for the logo */
-@keyframes pulse {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-/* This class is added by JavaScript to hide it */
-#loading-screen.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
